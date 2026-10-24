@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    >
+    <title>Who represents me?</title>
+    <style>
+      :root { --bg: #fafaf9; --fg: #1c1917; --muted: #78716c; --line: #e7e5e4; --accent: #2563eb; --bubble: #ffffff; }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #0f191c; --fg: #f5f5f4; --muted: #a8a29e; --line: #334155; --accent: #60a5fa; --bubble: #1e293b; }
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.5 system-ui, sans-serif; }
+      main { max-width: 40rem; margin: 0 auto; padding: 2rem 1rem; }
+      h1 { margin: 0 0 0.25rem; font-size: 1.75rem; }
+      p { color: var(--muted); margin: 0 0 1.5rem; }
+      #log { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1rem; }
+      .you, .bot { padding: 0.75rem 1rem; border: 1px solid var(--line); white-space: pre-wrap; max-width: 90%; }
+      .you { align-self: flex-end; background: var(--accent); color: #fff; border-color: var(--accent); }
+      .bot { align-self: flex-start; background: var(--bubble); font: 14px/1.5 ui-monospace, monospace; }
+      form { display: flex; gap: 0.5rem; }
+      input { flex: 1; padding: 0.6rem; font: inherit; border: 1px solid var(--line); background: var(--bubble); color: var(--fg); }
+      button { padding: 0.6rem 1rem; font: inherit; border: 0; background: var(--fg); color: var(--bg); cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Who represents me?</h1>
+      <p>
+        Type a U.S. street address.
+        The officials on file come from the open
+        <a
+          href="https://jurisdictional.org/developers"
+          style="color: var(--accent)"
+        >Jurisdictional API</a>.
+      </p>
+      <div
+        id="log"
+        aria-live="polite"
+      ></div>
+      <form id="ask">
+        <label
+          for="address"
+          hidden
+        >Address</label>
+        <input
+          id="address"
+          name="address"
+          autocomplete="street-address"
+          placeholder="300 Hemlock St, Vacaville, CA 95688"
+          required
+        >
+        <button type="submit">Send</button>
+      </form>
+    </main>
+    <script>
+      const log = document.getElementById("log");
+
+      function say(who, text) {
+        const bubble = document.createElement("div");
+        bubble.className = who;
+        bubble.textContent = text;
+        log.append(bubble);
+        bubble.scrollIntoView({ block: "end" });
+        return bubble;
+      }
+
+      document.getElementById("ask").addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const input = event.target.address;
+        const address = input.value.trim();
+        input.value = "";
+        say("you", address);
+        const reply = say("bot", "Looking that up…");
+
+        const response = await fetch(`/api/represent?address=${encodeURIComponent(address)}`);
+        const body = await response.json();
+        reply.textContent = response.ok ? body.text : body.error;
+      });
+    </script>
+  </body>
+</html>

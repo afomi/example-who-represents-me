@@ -1,0 +1,21 @@
+{
+  "name": "jurisdictional-example-who-represents-me",
+  "version": "0.1.0",
+  "description": "Address in, the officials on file out, from city council to Congress. A prototype on the open Jurisdictional API.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "who-represents-me": "bin/who-represents-me.js"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jurisdictional/example-who-represents-me.git"
+  }
+}
