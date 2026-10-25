@@ -6,10 +6,15 @@ import { formatText, representatives } from "./represent.js";
 // Twilio caps a single reply message at 1,600 characters.
 const SMS_MAX_LENGTH = 1600;
 
-const page = await readFile(new URL("../public/index.html", import.meta.url), "utf8");
+// The chat page and the modules it imports, the same files GitHub Pages serves.
+const files = {
+  "/": ["index.html", "text/html; charset=utf-8"],
+  "/src/jurisdictional.js": ["src/jurisdictional.js", "text/javascript"],
+  "/src/represent.js": ["src/represent.js", "text/javascript"],
+};
 
 // Routes:
-//   GET  /                         the chat page
+//   GET  /                         the chat page (it calls the Jurisdictional API itself)
 //   GET  /api/represent?address=…  JSON (also lat & lng)
 //   POST /sms                      a Twilio Messaging webhook: the text is the address
 export function app({ lookup = juricode } = {}) {
@@ -17,8 +22,9 @@ export function app({ lookup = juricode } = {}) {
     const url = new URL(request.url, "http://localhost");
 
     try {
-      if (request.method === "GET" && url.pathname === "/") {
-        return send(response, 200, "text/html; charset=utf-8", page);
+      if (request.method === "GET" && files[url.pathname]) {
+        const [path, type] = files[url.pathname];
+        return send(response, 200, type, await readFile(new URL(`../${path}`, import.meta.url)));
       }
 
       if (request.method === "GET" && url.pathname === "/api/represent") {

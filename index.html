@@ -56,7 +56,10 @@
         <button type="submit">Send</button>
       </form>
     </main>
-    <script>
+    <script type="module">
+      import { juricode } from "./src/jurisdictional.js";
+      import { formatText } from "./src/represent.js";
+
       const log = document.getElementById("log");
 
       function say(who, text) {
@@ -76,9 +79,11 @@
         say("you", address);
         const reply = say("bot", "Looking that up…");
 
-        const response = await fetch(`/api/represent?address=${encodeURIComponent(address)}`);
-        const body = await response.json();
-        reply.textContent = response.ok ? body.text : body.error;
+        try {
+          reply.textContent = formatText(await juricode({ address }));
+        } catch (error) {
+          reply.textContent = error.message;
+        }
       });
     </script>
   </body>

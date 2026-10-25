@@ -1,5 +1,5 @@
 {
-  "name": "jurisdictional-example-who-represents-me",
+  "name": "jurisdictional-who-represents-me",
   "version": "0.1.0",
   "description": "Address in, the officials on file out, from city council to Congress. A prototype on the open Jurisdictional API.",
   "license": "MIT",
@@ -16,6 +16,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/afomi/example-who-represents-me.git"
+    "url": "git+https://github.com/afomi/who-represents-me.git"
   }
 }

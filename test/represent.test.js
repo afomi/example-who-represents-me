@@ -61,6 +61,19 @@ test("texting an address to /sms replies with TwiML", async (t) => {
   assert.ok(body.length < 1800);
 });
 
+test("the server serves the same static chat page as GitHub Pages", async (t) => {
+  const server = app().listen(0);
+  t.after(() => server.close());
+  const base = `http://localhost:${server.address().port}`;
+
+  const page = await fetch(`${base}/`);
+  assert.match(await page.text(), /import \{ formatText \} from "\.\/src\/represent\.js"/);
+
+  const module = await fetch(`${base}/src/represent.js`);
+  assert.equal(module.headers.get("content-type"), "text/javascript");
+  assert.match(await module.text(), /export function formatText/);
+});
+
 test("an address the API cannot match comes back as the API's message", async (t) => {
   const server = app({
     lookup: async () => {
